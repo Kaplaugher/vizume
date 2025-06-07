@@ -8,7 +8,8 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<'form'>) {
-  const handleSignIn = async () => {
+  const handleSignIn = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     console.log('signing in');
     return await authClient.signIn.social({
       provider: 'google',
