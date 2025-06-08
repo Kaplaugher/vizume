@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, uuid } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
 					id: text('id').primaryKey(),
@@ -46,10 +46,29 @@ export const verification = pgTable("verification", {
  updatedAt: timestamp('updated_at').$defaultFn(() => /* @__PURE__ */ new Date())
 				});
 
+        export const videos = pgTable("videos", {
+  id: uuid("id").primaryKey().defaultRandom().unique(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  videoUrl: text("video_url").notNull(),
+  videoId: text("video_id").notNull(),
+  thumbnailUrl: text("thumbnail_url").notNull(),
+  visibility: text("visibility").$type<"public" | "private">().notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  views: integer("views").notNull().default(0),
+  duration: integer("duration"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  tags: text("tags").array(),
+});
+
 
 export const schema = {
     user,
     session,
     account,
     verification,
+    videos,
 }
