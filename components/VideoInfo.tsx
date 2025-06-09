@@ -4,7 +4,7 @@ import EmptyState from './EmptyState';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
-import { FileText, Info } from 'lucide-react';
+import { FileText, FileTextIcon, Info } from 'lucide-react';
 
 const VideoInfo = ({
   transcript,
@@ -33,7 +33,7 @@ const VideoInfo = ({
         </div>
       ) : (
         <EmptyState
-          icon="/assets/icons/copy.svg"
+          icon={<FileTextIcon className="h-12 w-12" />}
           title="No transcript available"
           description="This video doesn't include any transcribed content!"
         />

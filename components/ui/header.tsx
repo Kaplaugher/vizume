@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
-import { Upload, Video } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import { Button } from './button';
@@ -12,6 +12,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from './accordion';
+import RecordScreen from '../RecordScreen';
 
 const Header = ({
   subHeader,
@@ -44,12 +45,7 @@ const Header = ({
               Upload Video
             </Button>
           </Link>
-          <Link href="/record">
-            <Button variant="default" size="sm" className="gap-2">
-              <Video className="h-4 w-4" />
-              Record Video
-            </Button>
-          </Link>
+          <RecordScreen />
         </div>
       </div>
       <div className="flex gap-4 w-full justify-between">

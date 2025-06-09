@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { ilike, sql } from "drizzle-orm";
 import { videos } from "@/drizzle/schema";
-import { DEFAULT_VIDEO_CONFIG, DEFAULT_RECORDING_CONFIG } from "@/lib/constants";
+import { DEFAULT_VIDEO_CONFIG } from "@/lib/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -186,12 +186,47 @@ export const createAudioMixer = (
   return destination;
 };
 
-export const setupMediaRecorder = (stream: MediaStream) => {
-  try {
-    return new MediaRecorder(stream, DEFAULT_RECORDING_CONFIG);
-  } catch {
-    return new MediaRecorder(stream);
+export const setupRecording = (
+  stream: MediaStream,
+  handlers: RecordingHandlers
+): MediaRecorder => {
+  // Try different codec configurations in order of preference
+  const codecConfigs = [
+    { mimeType: "video/webm;codecs=vp9,opus", audioBitsPerSecond: 128000, videoBitsPerSecond: 2500000 },
+    { mimeType: "video/webm;codecs=vp8,opus", audioBitsPerSecond: 128000, videoBitsPerSecond: 2500000 },
+    { mimeType: "video/webm;codecs=h264,opus", audioBitsPerSecond: 128000, videoBitsPerSecond: 2500000 },
+    { mimeType: "video/webm", audioBitsPerSecond: 128000, videoBitsPerSecond: 2500000 },
+    { mimeType: "video/mp4" },
+  ];
+
+  let recorder: MediaRecorder;
+  
+  for (const config of codecConfigs) {
+    try {
+      if (MediaRecorder.isTypeSupported(config.mimeType)) {
+        recorder = new MediaRecorder(stream, config);
+        console.log(`Using codec: ${config.mimeType}`);
+        break;
+      }
+    } catch (err) {
+      console.warn(`Failed to create MediaRecorder with ${config.mimeType}:`, err);
+      continue;
+    }
   }
+
+  // Fallback to default MediaRecorder without any options
+  if (!recorder!) {
+    try {
+      recorder = new MediaRecorder(stream);
+      console.log("Using default MediaRecorder configuration");
+    } catch {
+      throw new Error("MediaRecorder is not supported in this browser");
+    }
+  }
+
+  recorder.ondataavailable = handlers.onDataAvailable;
+  recorder.onstop = handlers.onStop;
+  return recorder;
 };
 
 export const getVideoDuration = (url: string): Promise<number | null> =>
@@ -212,16 +247,6 @@ export const getVideoDuration = (url: string): Promise<number | null> =>
     };
     video.src = url;
   });
-
-export const setupRecording = (
-  stream: MediaStream,
-  handlers: RecordingHandlers
-): MediaRecorder => {
-  const recorder = new MediaRecorder(stream, DEFAULT_RECORDING_CONFIG);
-  recorder.ondataavailable = handlers.onDataAvailable;
-  recorder.onstop = handlers.onStop;
-  return recorder;
-};
 
 export const cleanupRecording = (
   recorder: MediaRecorder | null,
@@ -304,6 +329,7 @@ export function daysAgo(inputDate: Date): string {
 export const createIframeLink = (videoId: string) =>
   `https://iframe.mediadelivery.net/embed/452077/${videoId}?autoplay=true&preload=true`;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const doesTitleMatch = (videos: any, searchQuery: string) =>
   ilike(
     sql`REPLACE(REPLACE(REPLACE(LOWER(${videos.title}), '-', ''), '.', ''), ' ', '')`,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -57,7 +57,8 @@ const uploadFileToBunny = (
 
 const Upload = () => {
   const router = useRouter();
-  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -70,9 +71,42 @@ const Upload = () => {
     tags: '',
   });
 
+  useEffect(() => {
+    const checkForRecordedVideo = async () => {
+      try {
+        const stored = sessionStorage.getItem('recordedVideo');
+        if (!stored) return;
+
+        const { url, name, type } = JSON.parse(stored);
+        const blob = await fetch(url).then((res) => res.blob());
+        const file = new File([blob], name, {
+          type,
+          lastModified: Date.now(),
+        });
+
+        // Set the file directly
+        setUploadFile(file);
+
+        // Update the file input if it exists
+        if (fileInputRef.current) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          fileInputRef.current.files = dataTransfer.files;
+        }
+
+        sessionStorage.removeItem('recordedVideo');
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('Error loading recorded video:', err);
+      }
+    };
+
+    checkForRecordedVideo();
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      setUploadFile(e.target.files[0]);
       setError(null); // Clear any previous errors
     }
   };
@@ -108,7 +142,7 @@ const Upload = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file) return;
+    if (!uploadFile) return;
 
     setIsUploading(true);
     setError(null);
@@ -125,7 +159,7 @@ const Upload = () => {
         throw new Error('Failed to get upload credentials');
       }
 
-      await uploadFileToBunny(file, videoUploadUrl, videoAccessKey);
+      await uploadFileToBunny(uploadFile, videoUploadUrl, videoAccessKey);
 
       // Get thumbnail upload URL and upload thumbnail
       const {
@@ -253,6 +287,7 @@ const Upload = () => {
             <div className="space-y-2">
               <Label htmlFor="video">Video File</Label>
               <Input
+                ref={fileInputRef}
                 id="video"
                 type="file"
                 accept="video/mp4,video/mov,video/avi"
@@ -260,16 +295,16 @@ const Upload = () => {
                 className="cursor-pointer"
                 required
               />
-              {file && (
+              {uploadFile && (
                 <p className="text-sm text-muted-foreground">
-                  Selected file: {file.name}
+                  Selected file: {uploadFile.name}
                 </p>
               )}
             </div>
 
             <Button
               type="submit"
-              disabled={!file || !formData.title || isUploading}
+              disabled={!uploadFile || !formData.title || isUploading}
               className="w-full"
             >
               {isUploading ? 'Uploading...' : 'Upload Video'}
