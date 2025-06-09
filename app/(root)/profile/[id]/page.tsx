@@ -1,5 +1,5 @@
 import Header from '@/components/ui/header';
-import VideoCard from '@/components/video-card';
+import VideoCard from '@/components/VideoCard';
 
 const Profile = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;

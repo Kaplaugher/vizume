@@ -94,7 +94,8 @@ export const withErrorHandling = <T, A extends unknown[]>(
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      return errorMessage as unknown as T;
+      console.error('Error in server action:', errorMessage, error);
+      throw new Error(errorMessage);
     }
   };
 };

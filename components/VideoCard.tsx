@@ -6,6 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Eye, EyeOff, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 const VideoCard = ({
   id,
@@ -36,9 +37,11 @@ const VideoCard = ({
       <div className="relative">
         <Link href={`/video/${id}`} className="block">
           <div className="group relative overflow-hidden rounded-lg bg-gray-100 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-gray-100">
-            <img
-              alt=""
+            <Image
+              alt={title}
               src={thumbnail}
+              width={300}
+              height={300}
               className="pointer-events-none aspect-video w-full object-cover group-hover:opacity-75"
             />
             {duration && (

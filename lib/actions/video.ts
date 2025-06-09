@@ -92,8 +92,14 @@ export const getThumbnailUploadUrl = withErrorHandling(
 
 export const saveVideoDetails = withErrorHandling(
   async (videoDetails: VideoDetails) => {
+    console.log('saveVideoDetails called with:', videoDetails);
+    
     const userId = await getSessionUserId();
+    console.log('User ID:', userId);
+    
     await validateWithArcjet(userId);
+    
+    // Update video details with Bunny
     await apiFetch(
       `${VIDEO_STREAM_BASE_URL}/${BUNNY_LIBRARY_ID}/videos/${videoDetails.videoId}`,
       {
@@ -105,15 +111,36 @@ export const saveVideoDetails = withErrorHandling(
         },
       }
     );
+    console.log('Video updated in Bunny CDN');
+
+    // Process tags from string to array if needed
+    const processedTags = typeof videoDetails.tags === 'string' 
+      ? videoDetails.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+      : videoDetails.tags || [];
+    
+    console.log('Processed tags:', processedTags);
 
     const now = new Date();
-    await db.insert(videos).values({
-      ...videoDetails,
+    
+    const videoData = {
+      videoId: videoDetails.videoId,
+      title: videoDetails.title,
+      description: videoDetails.description,
+      thumbnailUrl: videoDetails.thumbnailUrl,
+      visibility: videoDetails.visibility,
       videoUrl: `${BUNNY.EMBED_URL}/${BUNNY_LIBRARY_ID}/${videoDetails.videoId}`,
       userId,
       createdAt: now,
       updatedAt: now,
-    });
+      tags: processedTags,
+      duration: videoDetails.duration || null,
+    };
+    
+    console.log('Inserting video data:', videoData);
+    
+    // Insert video details into database
+    const result = await db.insert(videos).values(videoData);
+    console.log('Video inserted successfully:', result);
 
     revalidatePaths(["/"]);
     return { videoId: videoDetails.videoId };

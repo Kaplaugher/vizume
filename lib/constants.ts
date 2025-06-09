@@ -29,3 +29,5 @@ export const DEFAULT_RECORDING_CONFIG = {
   audioBitsPerSecond: 128000,
   videoBitsPerSecond: 2500000,
 };
+
+export const visibilities: Visibility[] = ["public", "private"];

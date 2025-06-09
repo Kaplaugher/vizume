@@ -60,6 +60,8 @@ const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -71,6 +73,7 @@ const Upload = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+      setError(null); // Clear any previous errors
     }
   };
 
@@ -81,6 +84,7 @@ const Upload = () => {
       // Create preview URL
       const previewUrl = URL.createObjectURL(file);
       setThumbnailPreview(previewUrl);
+      setError(null); // Clear any previous errors
     }
   };
 
@@ -92,6 +96,7 @@ const Upload = () => {
       ...prev,
       [name]: value,
     }));
+    setError(null); // Clear any previous errors
   };
 
   const handleVisibilityChange = (value: Visibility) => {
@@ -105,41 +110,61 @@ const Upload = () => {
     e.preventDefault();
     if (!file) return;
 
-    const {
-      videoId,
-      uploadUrl: videoUploadUrl,
-      accessKey: videoAccessKey,
-    } = await getVideoUploadUrl();
+    setIsUploading(true);
+    setError(null);
 
-    if (!videoUploadUrl || !videoAccessKey) {
-      throw new Error('Failed to get upload credentials');
+    try {
+      // Get video upload URL and upload video
+      const {
+        videoId,
+        uploadUrl: videoUploadUrl,
+        accessKey: videoAccessKey,
+      } = await getVideoUploadUrl();
+
+      if (!videoUploadUrl || !videoAccessKey) {
+        throw new Error('Failed to get upload credentials');
+      }
+
+      await uploadFileToBunny(file, videoUploadUrl, videoAccessKey);
+
+      // Get thumbnail upload URL and upload thumbnail
+      const {
+        uploadUrl: thumbnailUploadUrl,
+        accessKey: thumbnailAccessKey,
+        cdnUrl: thumbnailCdnUrl,
+      } = await getThumbnailUploadUrl(videoId);
+
+      if (
+        !thumbnailUploadUrl ||
+        !thumbnailAccessKey ||
+        !thumbnailCdnUrl ||
+        !thumbnail
+      ) {
+        throw new Error('Failed to get thumbnail upload credentials');
+      }
+
+      await uploadFileToBunny(
+        thumbnail,
+        thumbnailUploadUrl,
+        thumbnailAccessKey
+      );
+
+      // Save video details to database
+      await saveVideoDetails({
+        videoId,
+        thumbnailUrl: thumbnailCdnUrl,
+        ...formData,
+      });
+
+      // Redirect to video page on success
+      router.push(`/video/${videoId}`);
+    } catch (err) {
+      console.error('Upload error:', err);
+      setError(
+        err instanceof Error ? err.message : 'An unexpected error occurred'
+      );
+      setIsUploading(false);
     }
-    await uploadFileToBunny(file, videoUploadUrl, videoAccessKey);
-
-    const {
-      uploadUrl: thumbnailUploadUrl,
-      accessKey: thumbnailAccessKey,
-      cdnUrl: thumbnailCdnUrl,
-    } = await getThumbnailUploadUrl(videoId);
-
-    if (
-      !thumbnailUploadUrl ||
-      !thumbnailAccessKey ||
-      !thumbnailCdnUrl ||
-      !thumbnail
-    ) {
-      throw new Error('Failed to get thumbnail upload credentials');
-    }
-
-    await uploadFileToBunny(thumbnail, thumbnailUploadUrl, thumbnailAccessKey);
-
-    await saveVideoDetails({
-      videoId,
-      thumbnailUrl: thumbnailCdnUrl,
-      ...formData,
-    });
-
-    router.push(`/video/${videoId}`);
   };
 
   return (
@@ -244,12 +269,13 @@ const Upload = () => {
 
             <Button
               type="submit"
-              disabled={!file || !formData.title}
+              disabled={!file || !formData.title || isUploading}
               className="w-full"
             >
-              Upload Video
+              {isUploading ? 'Uploading...' : 'Upload Video'}
             </Button>
           </form>
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
         </CardContent>
       </Card>
     </div>
