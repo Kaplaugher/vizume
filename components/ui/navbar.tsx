@@ -10,7 +10,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './dropdown-menu';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
 
 const Navbar = () => {
   const router = useRouter();
@@ -56,8 +57,19 @@ const Navbar = () => {
                     Profile
                   </DropdownMenuItem>
                   <DropdownMenuItem>Billing</DropdownMenuItem>
-                  <DropdownMenuItem>Team</DropdownMenuItem>
-                  <DropdownMenuItem>Subscription</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      return await authClient.signOut({
+                        fetchOptions: {
+                          onSuccess: () => {
+                            redirect('/sign-in');
+                          },
+                        },
+                      });
+                    }}
+                  >
+                    Logout
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

@@ -61,7 +61,7 @@ export const verification = pgTable("verification", {
   duration: integer("duration"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  tags: text("tags").array(),
+  tags: text("tags").array()
 });
 
 

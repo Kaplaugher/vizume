@@ -25,6 +25,7 @@ import {
   getVideoUploadUrl,
   saveVideoDetails,
 } from '@/lib/actions/video';
+import { useRouter } from 'next/navigation';
 
 type Visibility = 'public' | 'private';
 
@@ -55,6 +56,7 @@ const uploadFileToBunny = (
 };
 
 const Upload = () => {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
@@ -136,6 +138,8 @@ const Upload = () => {
       thumbnailUrl: thumbnailCdnUrl,
       ...formData,
     });
+
+    router.push(`/video/${videoId}`);
   };
 
   return (
