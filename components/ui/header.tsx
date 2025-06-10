@@ -38,7 +38,7 @@ const Header = ({
             <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           </div>
         </div>
-        <div>
+        <div className="flex gap-2">
           <Link href="/upload">
             <Button variant="outline" size="sm" className="gap-2">
               <Upload className="h-4 w-4" />

@@ -12,6 +12,7 @@ import {
 } from './dropdown-menu';
 import { redirect, useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import { Badge } from './badge';
 
 const Navbar = () => {
   const router = useRouter();
@@ -25,6 +26,9 @@ const Navbar = () => {
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
               <span className="text-xl font-bold">Vizume</span>
+              <Badge className="ml-2">
+                <span className="italic text-xl">BETA</span>
+              </Badge>
             </Link>
           </div>
 
