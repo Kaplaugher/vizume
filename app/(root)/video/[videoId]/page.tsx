@@ -40,6 +40,7 @@ const page = async ({ params }: Params) => {
               description={video.description}
               videoId={videoId}
               videoUrl={video.videoUrl}
+              resumeUrl={video.resumeUrl}
             />
           </div>
         </div>

@@ -103,6 +103,7 @@ declare interface VideoInfoProps {
   description: string;
   videoId: string;
   videoUrl: string;
+  resumeUrl?: string | null;
 }
 
 declare interface ImageWithFallbackProps extends Omit<ImageProps, "src"> {
@@ -118,6 +119,7 @@ declare interface VideoDetails {
   title: string;
   description: string;
   thumbnailUrl: string;
+  resumeUrl?: string;
   tags: string | string[];
   visibility: Visibility;
   duration?: number | null;
@@ -158,6 +160,12 @@ declare interface ThumbnailUploadUrlResponse {
   accessKey: string;
 }
 
+declare interface ResumeUploadUrlResponse {
+  uploadUrl: string;
+  cdnUrl: string;
+  accessKey: string;
+}
+
 declare interface VideoProcessingStatus {
   isProcessed: boolean;
   encodingProgress: number;
@@ -171,6 +179,7 @@ declare interface VideoWithUserResult {
     title: string;
     description: string;
     thumbnailUrl: string;
+    resumeUrl?: string | null;
     videoUrl: string;
     userId: string;
     views: number;
@@ -192,6 +201,7 @@ declare interface VideoObject {
   title: string;
   description: string;
   thumbnailUrl: string;
+  resumeUrl?: string | null;
   videoUrl: string;
   userId: string;
   views: number;

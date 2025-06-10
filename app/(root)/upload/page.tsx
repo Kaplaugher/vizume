@@ -23,6 +23,7 @@ import Image from 'next/image';
 import {
   getThumbnailUploadUrl,
   getVideoUploadUrl,
+  getResumeUploadUrl,
   saveVideoDetails,
 } from '@/lib/actions/video';
 import { useRouter } from 'next/navigation';
@@ -61,6 +62,7 @@ const Upload = () => {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [resume, setResume] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -118,6 +120,14 @@ const Upload = () => {
       // Create preview URL
       const previewUrl = URL.createObjectURL(file);
       setThumbnailPreview(previewUrl);
+      setError(null); // Clear any previous errors
+    }
+  };
+
+  const handleResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setResume(file);
       setError(null); // Clear any previous errors
     }
   };
@@ -183,10 +193,28 @@ const Upload = () => {
         thumbnailAccessKey
       );
 
+      // Handle resume upload if provided
+      let resumeCdnUrl: string | undefined;
+      if (resume) {
+        const {
+          uploadUrl: resumeUploadUrl,
+          accessKey: resumeAccessKey,
+          cdnUrl: resumeUrl,
+        } = await getResumeUploadUrl(videoId);
+
+        if (!resumeUploadUrl || !resumeAccessKey || !resumeUrl) {
+          throw new Error('Failed to get resume upload credentials');
+        }
+
+        await uploadFileToBunny(resume, resumeUploadUrl, resumeAccessKey);
+        resumeCdnUrl = resumeUrl;
+      }
+
       // Save video details to database
       await saveVideoDetails({
         videoId,
         thumbnailUrl: thumbnailCdnUrl,
+        resumeUrl: resumeCdnUrl,
         ...formData,
       });
 
@@ -281,6 +309,22 @@ const Upload = () => {
                     className="object-cover rounded-md"
                   />
                 </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="resume">Resume (PDF)</Label>
+              <Input
+                id="resume"
+                type="file"
+                accept=".pdf,application/pdf"
+                onChange={handleResumeChange}
+                className="cursor-pointer"
+              />
+              {resume && (
+                <p className="text-sm text-muted-foreground">
+                  Selected resume: {resume.name}
+                </p>
               )}
             </div>
 

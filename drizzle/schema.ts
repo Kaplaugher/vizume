@@ -53,6 +53,7 @@ export const verification = pgTable("verification", {
   videoUrl: text("video_url").notNull(),
   videoId: text("video_id").notNull(),
   thumbnailUrl: text("thumbnail_url").notNull(),
+  resumeUrl: text("resume_url"),
   visibility: text("visibility").$type<"public" | "private">().notNull(),
   userId: text("user_id")
     .notNull()

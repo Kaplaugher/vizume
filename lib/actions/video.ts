@@ -90,6 +90,20 @@ export const getThumbnailUploadUrl = withErrorHandling(
   }
 );
 
+export const getResumeUploadUrl = withErrorHandling(
+  async (videoId: string) => {
+    const timestampedFileName = `${Date.now()}-${videoId}-resume.pdf`;
+    const uploadUrl = `${THUMBNAIL_STORAGE_BASE_URL}/resumes/${timestampedFileName}`;
+    const cdnUrl = `${THUMBNAIL_CDN_URL}/resumes/${timestampedFileName}`;
+
+    return {
+      uploadUrl,
+      cdnUrl,
+      accessKey: ACCESS_KEYS.storageAccessKey,
+    };
+  }
+);
+
 export const saveVideoDetails = withErrorHandling(
   async (videoDetails: VideoDetails) => {
     console.log('saveVideoDetails called with:', videoDetails);
@@ -127,6 +141,7 @@ export const saveVideoDetails = withErrorHandling(
       title: videoDetails.title,
       description: videoDetails.description,
       thumbnailUrl: videoDetails.thumbnailUrl,
+      resumeUrl: videoDetails.resumeUrl || null,
       visibility: videoDetails.visibility,
       videoUrl: `${BUNNY.EMBED_URL}/${BUNNY_LIBRARY_ID}/${videoDetails.videoId}`,
       userId,
@@ -293,7 +308,7 @@ export const getVideoProcessingStatus = withErrorHandling(
 );
 
 export const deleteVideo = withErrorHandling(
-  async (videoId: string, thumbnailUrl: string) => {
+  async (videoId: string, thumbnailUrl: string, resumeUrl?: string) => {
     await apiFetch(
       `${VIDEO_STREAM_BASE_URL}/${BUNNY_LIBRARY_ID}/videos/${videoId}`,
       { method: "DELETE", bunnyType: "stream" }
@@ -304,6 +319,15 @@ export const deleteVideo = withErrorHandling(
       `${THUMBNAIL_STORAGE_BASE_URL}/thumbnails/${thumbnailPath}`,
       { method: "DELETE", bunnyType: "storage", expectJson: false }
     );
+
+    // Delete resume if it exists
+    if (resumeUrl) {
+      const resumePath = resumeUrl.split("resumes/")[1];
+      await apiFetch(
+        `${THUMBNAIL_STORAGE_BASE_URL}/resumes/${resumePath}`,
+        { method: "DELETE", bunnyType: "storage", expectJson: false }
+      );
+    }
 
     await db.delete(videos).where(eq(videos.videoId, videoId));
     revalidatePaths(["/", `/video/${videoId}`]);
