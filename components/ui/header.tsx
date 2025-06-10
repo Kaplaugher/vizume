@@ -24,7 +24,7 @@ const Header = ({
   userImage?: string;
 }) => {
   return (
-    <div className="flex flex-col gap-4  w-full  px-4 sm:px-6 lg:px-8 ">
+    <div className="flex flex-col gap-4  w-full  ">
       <div className="flex justify-between items-center gap-4">
         <div className="flex items-center gap-2">
           {userImage && (

@@ -16,7 +16,7 @@ const Profile = async ({
   const { user, videos } = await getAllVideosByUser(id, query, filter);
   if (!user) redirect('/404');
   return (
-    <div className="container mx-auto sm:px-6 lg:px-8">
+    <div className="flex flex-col gap-4 mt-4">
       <Header
         subHeader={user?.email}
         title={user?.name}

@@ -54,8 +54,8 @@ const VideoPlayer = ({ videoId, className }: VideoPlayerProps) => {
   }, [videoId, state.isLoaded, state.hasIncrementedView, state.isProcessing]);
 
   return (
-    <Card className={cn('overflow-hidden', className)}>
-      <CardContent className="p-0">
+    <div className={cn('overflow-hidden', className)}>
+      <div className="p-0">
         {state.isProcessing ? (
           <div className="flex items-center justify-center min-h-[400px] bg-muted/30">
             <div className="text-center space-y-4">
@@ -77,8 +77,8 @@ const VideoPlayer = ({ videoId, className }: VideoPlayerProps) => {
             />
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

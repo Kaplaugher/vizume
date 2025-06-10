@@ -19,9 +19,9 @@ const Home = async ({
   );
   console.log(videos);
   return (
-    <div className="container mx-auto sm:px-6 lg:px-8 flex flex-col gap-4 mt-4">
+    <div className="flex flex-col gap-4 mt-4">
       <Header subHeader="Library" title="All Videos" />
-      <div className="container mx-auto sm:px-6 lg:px-8">
+      <div className="">
         {videos?.length > 0 ? (
           <>
             <ul
