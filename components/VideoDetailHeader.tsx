@@ -7,7 +7,6 @@ import { authClient } from '@/lib/auth-client';
 import { visibilities } from '@/lib/constants';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
-import { Card, CardContent } from './ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,93 +70,89 @@ const VideoDetailHeader = ({
   };
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div className="flex-1 space-y-4">
-            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 py-2">
+      <div className="flex-1 space-y-4">
+        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
 
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                className="h-auto p-0 text-left justify-start"
-                onClick={() => router.push(`/profile/${ownerId}`)}
-              >
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={userImg ?? ''} />
-                  <AvatarFallback>{username?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="ml-3">
-                  <p className="font-medium">{username ?? 'Guest'}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {daysAgo(createdAt)}
-                  </p>
-                </div>
-              </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            className="h-auto p-0 text-left justify-start"
+            onClick={() => router.push(`/profile/${ownerId}`)}
+          >
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={userImg ?? ''} />
+              <AvatarFallback>{username?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="ml-3">
+              <p className="font-medium">{username ?? 'Guest'}</p>
+              <p className="text-sm text-muted-foreground">
+                {daysAgo(createdAt)}
+              </p>
             </div>
-          </div>
+          </Button>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={copyLink}
+          className="gap-2"
+        >
+          {copied ? (
+            <Check className="h-4 w-4" />
+          ) : (
+            <Link className="h-4 w-4" />
+          )}
+          {copied ? 'Copied!' : 'Share'}
+        </Button>
+
+        {isOwner && (
+          <>
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
-              onClick={copyLink}
+              onClick={handleDelete}
+              disabled={isDeleting}
               className="gap-2"
             >
-              {copied ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <Link className="h-4 w-4" />
-              )}
-              {copied ? 'Copied!' : 'Share'}
+              <Trash2 className="h-4 w-4" />
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </Button>
 
-            {isOwner && (
-              <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   size="sm"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
+                  disabled={isUpdating}
                   className="gap-2"
                 >
-                  <Trash2 className="h-4 w-4" />
-                  {isDeleting ? 'Deleting...' : 'Delete'}
+                  <Eye className="h-4 w-4" />
+                  <Badge variant="secondary" className="capitalize">
+                    {visibilityState}
+                  </Badge>
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
-
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={isUpdating}
-                      className="gap-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      <Badge variant="secondary" className="capitalize">
-                        {visibilityState}
-                      </Badge>
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {visibilities.map((option) => (
-                      <DropdownMenuItem
-                        key={option}
-                        onClick={() => handleVisibilityChange(option)}
-                        className="capitalize"
-                      >
-                        {option}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {visibilities.map((option) => (
+                  <DropdownMenuItem
+                    key={option}
+                    onClick={() => handleVisibilityChange(option)}
+                    className="capitalize"
+                  >
+                    {option}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
