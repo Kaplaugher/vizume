@@ -15,6 +15,8 @@ import { authClient } from '@/lib/auth-client';
 
 const Navbar = () => {
   const router = useRouter();
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   return (
     <nav className="border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,18 +31,6 @@ const Navbar = () => {
           {/* Navigation Links */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
-              <Link
-                href="/features"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Features
-              </Link>
-              <Link
-                href="/pricing"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Pricing
-              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>
@@ -52,7 +42,7 @@ const Navbar = () => {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={() => router.push('/profile/123123')}
+                    onClick={() => router.push(`/profile/${user?.id}`)}
                   >
                     Profile
                   </DropdownMenuItem>
