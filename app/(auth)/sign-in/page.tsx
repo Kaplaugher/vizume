@@ -1,5 +1,7 @@
 import { LoginForm } from '@/components/LoginForm';
 import { GalleryVerticalEnd } from 'lucide-react';
+import Image from 'next/image';
+import interview from '@/public/interview.svg';
 
 export default function LoginPage() {
   return (
@@ -20,10 +22,12 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        <img
-          src="/placeholder.svg"
-          alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+        <Image
+          src={interview}
+          width={500}
+          height={500}
+          alt="Vizume"
+          className="absolute inset-0 h-full w-full object-fit dark:brightness-[0.2] dark:grayscale"
         />
       </div>
     </div>
