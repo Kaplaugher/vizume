@@ -71,7 +71,7 @@ const VideoPlayer = ({ videoId, className }: VideoPlayerProps) => {
               loading="lazy"
               title="Video player"
               className="absolute inset-0 w-full h-full border-0"
-              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+              allow="accelerometer; gyroscope; encrypted-media; picture-in-picture"
               allowFullScreen
               onLoad={() => setState((prev) => ({ ...prev, isLoaded: true }))}
             />
