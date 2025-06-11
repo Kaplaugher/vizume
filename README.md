@@ -10,6 +10,13 @@ Vizume is a modern platform that allows job seekers to create compelling profile
 - **Database**: PostgreSQL with [Drizzle ORM](https://orm.drizzle.team)
 - **Fonts**: [Geist](https://vercel.com/font) font family
 
+## Screenshots
+<img width="1277" alt="Screenshot 2025-06-11 at 1 33 47 PM" src="https://github.com/user-attachments/assets/400fd744-efb2-461a-b8b5-80aff5d3e3aa" />
+<img width="1295" alt="Screenshot 2025-06-11 at 1 33 54 PM" src="https://github.com/user-attachments/assets/e13beca4-9eca-4796-b0a9-65d88e6df9b7" />
+
+<img width="1198" alt="Screenshot 2025-06-11 at 1 34 05 PM" src="https://github.com/user-attachments/assets/7716599a-9754-4474-a819-8e43d03b40d2" />
+
+
 ## Getting Started
 
 First, run the development server:
