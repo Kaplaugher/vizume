@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vizume
+
+**Upload and share an intro video and resume, stand out from the crowd. Stop throwing your resumes into the void.**
+
+Vizume is a modern platform that allows job seekers to create compelling profile pages featuring both their resume and an introductory video, helping them stand out in today's competitive job market.
+
+## Tech Stack
+
+- **Frontend**: [Next.js](https://nextjs.org) with [Tailwind CSS](https://tailwindcss.com)
+- **Database**: PostgreSQL with [Drizzle ORM](https://orm.drizzle.team)
+- **Fonts**: [Geist](https://vercel.com/font) font family
 
 ## Getting Started
 
@@ -18,16 +28,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about the technologies used in this project:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs) - utility-first CSS framework
+- [Drizzle ORM Documentation](https://orm.drizzle.team/docs/overview) - TypeScript ORM for SQL databases
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/) - powerful open source database
 
 ## Deploy on Vercel
 
